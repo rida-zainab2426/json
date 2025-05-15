@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jsoncard</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <style>
+    body {
+      background-color: #f4f4f4;
+      padding: 20px;
+    }
+
+    #filter-buttons {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    #filter-buttons button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1em;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      margin: 5px;
+    }
+
+    #filter-buttons button:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+
+    #filter-buttons button:focus {
+      outline: none;
+    }
+
+    .card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: none;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-img-top {
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .card-body {
+      text-align: center;
+      background-color: #fff;
+    }
+
+    .card-title {
+      font-size: 1.2em;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .card-text {
+      font-size: 0.9em;
+      color: #666;
+    }
+
+    .btn-outline-danger {
+      transition: background-color 0.3s ease, color 0.3s ease;
+      border-color: #dc3545;
+      color: #dc3545;
+    }
+
+    .btn-outline-danger:hover {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .search-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 20px 0;
+    }
+
+    #search-input {
+      width: 70%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px 0 0 5px;
+      font-size: 1em;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+
+    #search-input:focus {
+      border-color: #007bff;
+    }
+
+    #search-button {
+      padding: 10px 20px;
+      border: 1px solid #ccc;
+      border-left: none;
+      border-radius: 0 5px 5px 0;
+      background-color: #007bff;
+      color: white;
+      font-size: 1em;
+      cursor: pointer;
+      outline: none;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    #search-button:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+
+    #search-button:focus {
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  
+    <!-- search bar  -->
+    <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Search for a card...">
+        <button id="search-button" onclick="searchCards()">Search</button>
+    </div>      
+  <!-- Filter Buttons -->
+  <div id="filter-buttons">
+    <button onclick="filterCards('all')">All</button>
+    <button onclick="filterCards('Fast Food')">Fast Food</button>
+    <button onclick="filterCards('Desserts')">Desserts</button>
+    <button onclick="filterCards('Main Course')">Main Course</button>
+    <button onclick="filterCards('Snacks')">Snacks</button>
+  </div>
+
+  <!-- Card Container -->
+  <div class="container my-5">
+    <div class="row gy-5" id="card-container"></div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+  <script>
+    const products = [
+      { name: "Pizza", image: "https://i.pinimg.com/236x/1e/a7/fc/1ea7fca510708ed25f97b2ca63809d32.jpg", price: 15, category: "Fast Food" },
+      { name: "Burger", image: "https://i.pinimg.com/236x/90/e4/82/90e4824224b82a769281ae3502e92e6c.jpg", price: 10, category: "Fast Food" },
+      { name: "Pasta", image: "https://i.pinimg.com/236x/b5/f0/81/b5f0819d8dd5b4e8616b8b223ea5df74.jpg", price: 12, category: "Main Course" },
+      { name: "Salad", image: "https://i.pinimg.com/236x/eb/cb/b9/ebcbb960d5d992314b90ba13029e05b3.jpg", price: 8, category: "Main Course" },
+      { name: "Sushi", image: "https://i.pinimg.com/474x/b1/21/41/b121419a4f6e16be30b58364b1b5681c.jpg", price: 20, category: "Main Course" },
+      { name: "Ice Cream", image: "https://i.pinimg.com/236x/a9/4e/49/a94e49fc39e6a12d7b3b8d713b07767a.jpg", price: 5, category: "Desserts" },
+      { name: "Cake", image: "https://i.pinimg.com/236x/3d/d0/92/3dd0925c9d2c906f2a50b5528314542f.jpg", price: 25, category: "Desserts" },
+      { name: "Shawarma", image: "https://i.pinimg.com/474x/86/8a/09/868a09bd03cfc4918f1e2ad62183a151.jpg", price: 18, category: "Fast Food" },
+      { name: "Sandwich", image: "https://i.pinimg.com/236x/2d/82/8f/2d828f21fd6c829f8ee9698e3b7f205b.jpg", price: 22, category: "Snacks" },
+      { name: "Steak", image: "https://i.pinimg.com/236x/8a/f1/ac/8af1ac3850f0794d34fe78a6850220d3.jpg", price: 30, category: "Main Course" },
+      { name: "Noodles", image: "https://i.pinimg.com/236x/66/69/aa/6669aa09bc7baabaf050f80c86416806.jpg", price: 16, category: "Main Course" },
+      { name: "Chicken Wings", image: "https://i.pinimg.com/236x/5c/3c/47/5c3c47b46b57358b576e68ead1f5eab1.jpg", price: 12, category: "Fast Food" },
+      { name: "Fried Rice", image: "https://i.pinimg.com/236x/b9/ff/32/b9ff32c78f37aae474dded1be3d48d45.jpg", price: 10, category: "Main Course" },
+      { name: "Hot Dog", image: "https://i.pinimg.com/236x/81/d0/23/81d0234a77d0104c09b3607f7ec5f519.jpg", price: 8, category: "Snacks" },
+      { name: "Pancakes", image: "https://i.pinimg.com/236x/24/b3/26/24b326576650d53b8246d6c608c355bf.jpg", price: 12, category: "Desserts" },
+      { name: "Donuts", image: "https://i.pinimg.com/236x/7f/0c/e2/7f0ce26852b57bef985a7440203e3aea.jpg", price: 7, category: "Desserts" },
+      { name: "French Fries", image: "https://i.pinimg.com/236x/73/7e/d9/737ed93987aae98a76fc2e5f12fc0ecc.jpg", price: 5, category: "Snacks" },
+      { name: "Soup", image: "https://i.pinimg.com/236x/90/b3/45/90b3451b207bb8f084c996703a407797.jpg", price: 12, category: "Main Course" },
+      { name: "Spaghetti", image: "https://i.pinimg.com/236x/00/22/b9/0022b9ae4cff08e1cdfd6eecc739107a.jpg", price: 10, category: "Main Course" },
+      { name: "Biryani", image: "https://i.pinimg.com/236x/2b/64/e1/2b64e15ac11687bb3074b9f7abc87edd.jpg", price: 20, category: "Main Course" },
+      { name: "Fruit Salad", image: "https://i.pinimg.com/236x/34/d4/1d/34d41df7dc9485a5fd0d0a5f20d34101.jpg", price: 8, category: "Desserts" },
+      { name: "Chocolates", image: "https://i.pinimg.com/236x/e4/a4/6c/e4a46cd1ac8b3cce367704c5a5edd16d.jpg", price: 5, category: "Desserts" },
+      { name: "Cheese", image: "https://i.pinimg.com/236x/62/e5/78/62e578fb13488ef21e259ed949d8bc97.jpg", price: 15, category: "Snacks" },
+      { name: "Brownie", image: "https://i.pinimg.com/236x/81/f5/6b/81f56b4e1ec0b3d0d129e03be8470b33.jpg", price: 3, category: "Desserts" },
+      { name: "Cookies", image: "https://i.pinimg.com/236x/39/94/ae/3994ae82018f624dc7fbc42f8abf3426.jpg", price: 6, category: "Desserts" }
+    ];
+
+    const cardContainer = document.getElementById('card-container');
+
+    // Function to display cards
+function displayCards(cards) {
+  cardContainer.innerHTML = ""; // Clear the card container first
+  cards.forEach((card, index) => {
+    cardContainer.innerHTML += `
+      <div class="col-lg-3 col-md-4 col-sm-6">
+        <div class="card">
+          <img src="${card.image}" class="card-img-top" alt="${card.name}">
+          <div class="card-body">
+            <h5 class="card-name">${card.name}</h5>
+            <p class="card-price">$${card.price}</p>
+            <a href="./detail.html?id=${index}" class="btn btn-outline-danger">SHOW PRODUCT</a>
+          </div>
+        </div>
+      </div>`;
+  });
+}
+    // Initial display of all cards
+    displayCards(products);
+
+    // Function to filter cards by category
+    function filterCards(category) {
+      if (category === 'all') {
+        displayCards(products);
+      } else {
+        const filteredCards = products.filter(products => products.category === category);
+        displayCards(filteredCards);
+      }
+    }
+
+    // Function to search cards by name
+    function searchCards() {
+      const searchTerm = document.getElementById('search-input').value.toLowerCase();
+      const filteredCards = products.filter(products => products.name.toLowerCase().includes(searchTerm));
+      displayCards(filteredCards);
+    }
+    function addToCart(productsName, productsPrice) {
+        const cartItem = document.getElementById("cartItem");
+        if (cartItem.innerHTML === "No items added yet.") {
+            cartItem.innerHTML = "";
+        }
+        cartItem.innerHTML += `You added ${productsName} (${productPrice}) to your cart.<br>`;
+        alert(`${productsName} has been added to your cart.`);
+    }
+  </script>
+</body>
+</html>
